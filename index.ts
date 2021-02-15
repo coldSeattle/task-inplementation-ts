@@ -10,12 +10,26 @@
   NOTE: можно использовать готовую реализацию format-функции
  */
 
-const sourceStrings = {
-  hello: 'Добрый вечор, {username}!',
+export type SourceAdminType = {
+  label: () => string;
+  hint: (vars?: { [key: string]: string | number }) => string;
+};
+
+export type SourceType = {
+  hello: (vars?: { [key: string]: string | number }) => string;
+  admin: {
+    objectForm: SourceAdminType;
+  };
+};
+
+const sourceStrings: SourceType = {
+  hello: (vars?: { username: string | number }) =>
+    `Добрый вечор, ${vars.username}!`,
   admin: {
     objectForm: {
-      label: 'Пароль администратора',
-      hint: 'Не менее {minLength} символов. Сейчас ― {length}',
+      label: () => 'Пароль администратора',
+      hint: (vars?: { minLength: string | number; length: string | number }) =>
+        `Не менее ${vars.minLength} символов. Сейчас ― ${vars.length}`,
     },
   },
 };
@@ -41,10 +55,17 @@ if (testDepth && testDepthFmt && testFormat)
 // === implementation ===
 
 type Input = {
-  /* TODO type input */
+  hello: (vars?: { [key: string]: string | number }) => string;
+  admin: {
+    objectForm: SourceAdminType;
+  };
 };
+
 type Result<T> = {
-  /* TODO type output */
+  hello: (vars?: { [key: string]: string | number }) => string;
+  admin: {
+    objectForm: SourceAdminType;
+  };
 };
 
 function i18n<T extends Input>(strings: T): Result<T> {
